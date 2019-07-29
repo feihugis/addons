@@ -3,7 +3,7 @@ licenses(["notice"])  # Apache 2.0
 package(default_visibility = ["//visibility:public"])
 
 load("@local_config_tf//:build_defs.bzl", "D_GLIBCXX_USE_CXX11_ABI")
-load("@local_config_cuda//cuda:build_defs.bzl", "if_cuda_is_configured", "if_cuda")
+load("@local_config_cuda//cuda:build_defs.bzl", "if_cuda", "if_cuda_is_configured")
 
 cc_binary(
     name = "_distort_image_ops.so",
@@ -46,6 +46,28 @@ cc_library(
     alwayslink = 1,
 )
 
+cc_library(
+    name = "adjust_hsv_in_yiq_op_gpu",
+    srcs = [
+        "cc/kernels/adjust_hsv_in_yiq_op.h",
+        "cc/kernels/adjust_hsv_in_yiq_op_gpu.cu.cc",
+    ],
+    copts = if_cuda_is_configured([
+        "-DGOOGLE_CUDA=1",
+        "-x cuda",
+        "-nvcc_options=relaxed-constexpr",
+        "-nvcc_options=ftz=true",
+    ]),
+    deps = [
+        "@local_config_tf//:libtensorflow_framework",
+        "@local_config_tf//:tf_header_lib",
+    ] + if_cuda_is_configured([
+        "@local_config_cuda//cuda:cuda_libs",
+        "@local_config_cuda//cuda:cuda_headers",
+    ]),
+    alwayslink = 1,
+)
+
 cc_binary(
     name = "_image_ops.so",
     srcs = [
@@ -64,5 +86,8 @@ cc_binary(
     deps = [
         "@local_config_tf//:libtensorflow_framework",
         "@local_config_tf//:tf_header_lib",
-    ] + if_cuda_is_configured([":image_projective_transform_op_gpu"]),
+    ] + if_cuda_is_configured([
+        ":image_projective_transform_op_gpu",
+        ":adjust_hsv_in_yiq_op_gpu",
+    ]),
 )
