@@ -5,30 +5,11 @@ package(default_visibility = ["//visibility:public"])
 load("@local_config_tf//:build_defs.bzl", "D_GLIBCXX_USE_CXX11_ABI")
 load("@local_config_cuda//cuda:build_defs.bzl", "if_cuda", "if_cuda_is_configured")
 
-cc_binary(
-    name = "_distort_image_ops.so",
-    srcs = [
-        "cc/kernels/adjust_hsv_in_yiq_op.cc",
-        "cc/kernels/adjust_hsv_in_yiq_op.h",
-        "cc/ops/distort_image_ops.cc",
-    ],
-    copts = [
-        "-pthread",
-        "-std=c++11",
-        D_GLIBCXX_USE_CXX11_ABI,
-    ],
-    linkshared = 1,
-    deps = [
-        "@local_config_tf//:libtensorflow_framework",
-        "@local_config_tf//:tf_header_lib",
-    ],
-)
-
 cc_library(
-    name = "image_projective_transform_op_gpu",
+    name = "adjust_hsv_in_yiq_op_gpu",
     srcs = [
-        "cc/kernels/image_projective_transform_op.h",
-        "cc/kernels/image_projective_transform_op_gpu.cu.cc",
+        "cc/kernels/adjust_hsv_in_yiq_op.h",
+        "cc/kernels/adjust_hsv_in_yiq_op_gpu.cu.cc",
     ],
     copts = if_cuda_is_configured([
         "-DGOOGLE_CUDA=1",
@@ -46,11 +27,30 @@ cc_library(
     alwayslink = 1,
 )
 
-cc_library(
-    name = "adjust_hsv_in_yiq_op_gpu",
+cc_binary(
+    name = "_distort_image_ops.so",
     srcs = [
+        "cc/kernels/adjust_hsv_in_yiq_op.cc",
         "cc/kernels/adjust_hsv_in_yiq_op.h",
-        "cc/kernels/adjust_hsv_in_yiq_op_gpu.cu.cc",
+        "cc/ops/distort_image_ops.cc",
+    ],
+    copts = [
+        "-pthread",
+        "-std=c++11",
+        D_GLIBCXX_USE_CXX11_ABI,
+    ] + if_cuda(["-DGOOGLE_CUDA=1"]),
+    linkshared = 1,
+    deps = [
+        "@local_config_tf//:libtensorflow_framework",
+        "@local_config_tf//:tf_header_lib",
+    ] + if_cuda_is_configured([":adjust_hsv_in_yiq_op_gpu"]),
+)
+
+cc_library(
+    name = "image_projective_transform_op_gpu",
+    srcs = [
+        "cc/kernels/image_projective_transform_op.h",
+        "cc/kernels/image_projective_transform_op_gpu.cu.cc",
     ],
     copts = if_cuda_is_configured([
         "-DGOOGLE_CUDA=1",
@@ -86,8 +86,5 @@ cc_binary(
     deps = [
         "@local_config_tf//:libtensorflow_framework",
         "@local_config_tf//:tf_header_lib",
-    ] + if_cuda_is_configured([
-        ":image_projective_transform_op_gpu",
-        ":adjust_hsv_in_yiq_op_gpu",
-    ]),
+    ] + if_cuda_is_configured([":image_projective_transform_op_gpu"]),
 )
