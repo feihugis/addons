@@ -6,28 +6,6 @@ load("@local_config_tf//:build_defs.bzl", "D_GLIBCXX_USE_CXX11_ABI")
 load("@local_config_cuda//cuda:build_defs.bzl", "if_cuda", "if_cuda_is_configured")
 
 cc_library(
-    name = "gpu_util",
-    srcs = [
-        "cc/kernels/gpu_utils.h",
-        "cc/kernels/gpu_utils.cc",
-    ],
-    copts = if_cuda_is_configured([
-        "-DGOOGLE_CUDA=1",
-        "-x cuda",
-        "-nvcc_options=relaxed-constexpr",
-        "-nvcc_options=ftz=true",
-    ]),
-    deps = [
-        "@local_config_tf//:libtensorflow_framework",
-        "@local_config_tf//:tf_header_lib",
-    ] + if_cuda_is_configured([
-        "@local_config_cuda//cuda:cuda_libs",
-        "@local_config_cuda//cuda:cuda_headers",
-    ]),
-    alwayslink = 1,
-)
-
-cc_library(
     name = "adjust_hsv_in_yiq_op_gpu",
     srcs = [
         "cc/kernels/adjust_hsv_in_yiq_op.h",
