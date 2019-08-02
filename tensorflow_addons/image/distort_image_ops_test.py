@@ -111,14 +111,14 @@ class AdjustHueInYiqTest(tf.test.TestCase):
         #     self.skipTest("This test does not work in the graph mode yet.")
         x_np = np.random.rand(4, 2, 4) * 255.
         delta_h = np.random.rand() * 2.0 - 1.0
-        if context.executing_eagerly:
-            with self.assertRaisesOpError("input must have 3 channels "
-                                          "but instead has 4 channels"):
-                self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
-        else:
-            print("------ graph mode")
+        if not context.executing_eagerly:
             with self.assertRaisesOpError("RecvAsync is cancelled"):
                 self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
+            return
+
+        with self.assertRaisesOpError("input must have 3 channels "
+                                      "but instead has 4 channels"):
+            self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
 
     def test_adjust_hsv_in_yiq_unknown_shape(self):
         fn = distort_image_ops.adjust_hsv_in_yiq.get_concrete_function(
