@@ -116,7 +116,8 @@ class AdjustHueInYiqTest(tf.test.TestCase):
                                           "but instead has 4 channels"):
                 self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
         else:
-            with self.assertRaises(tf.errors.CancelledError):
+            print("------ graph mode")
+            with self.assertRaisesOpError("RecvAsync is cancelled"):
                 self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
 
     def test_adjust_hsv_in_yiq_unknown_shape(self):
