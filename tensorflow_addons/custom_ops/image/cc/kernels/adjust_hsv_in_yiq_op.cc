@@ -13,9 +13,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#if GOOGLE_CUDA
-#define EIGEN_USE_GPU
-#endif  // GOOGLE_CUDA
+//#if GOOGLE_CUDA
+//#define EIGEN_USE_GPU
+//#endif  // GOOGLE_CUDA
 
 #include <memory>
 
@@ -141,29 +141,29 @@ REGISTER_KERNEL_BUILDER(
     Name("AdjustHsvInYiq").Device(DEVICE_CPU).TypeConstraint<float>("T"),
     AdjustHsvInYiqOp<CPUDevice>);
 
-#if GOOGLE_CUDA
-template <>
-class AdjustHsvInYiqOp<GPUDevice> : public AdjustHsvInYiqOpBase {
- public:
-  explicit AdjustHsvInYiqOp(OpKernelConstruction* context)
-      : AdjustHsvInYiqOpBase(context) {}
-
-  void DoCompute(OpKernelContext* ctx, const ComputeOptions& options) override {
-    const int64 number_of_elements = options.input->NumElements();
-    if (number_of_elements <= 0) {
-      return;
-    }
-    const float* delta_h = options.delta_h->flat<float>().data();
-    const float* scale_s = options.scale_s->flat<float>().data();
-    const float* scale_v = options.scale_v->flat<float>().data();
-    functor::AdjustHsvInYiqGPU()(ctx, options.channel_count, options.input,
-                                 delta_h, scale_s, scale_v, options.output);
-  }
-};
-
-REGISTER_KERNEL_BUILDER(
-    Name("AdjustHsvInYiq").Device(DEVICE_GPU).TypeConstraint<float>("T"),
-    AdjustHsvInYiqOp<GPUDevice>);
-#endif
+//#if GOOGLE_CUDA
+//template <>
+//class AdjustHsvInYiqOp<GPUDevice> : public AdjustHsvInYiqOpBase {
+// public:
+//  explicit AdjustHsvInYiqOp(OpKernelConstruction* context)
+//      : AdjustHsvInYiqOpBase(context) {}
+//
+//  void DoCompute(OpKernelContext* ctx, const ComputeOptions& options) override {
+//    const int64 number_of_elements = options.input->NumElements();
+//    if (number_of_elements <= 0) {
+//      return;
+//    }
+//    const float* delta_h = options.delta_h->flat<float>().data();
+//    const float* scale_s = options.scale_s->flat<float>().data();
+//    const float* scale_v = options.scale_v->flat<float>().data();
+//    functor::AdjustHsvInYiqGPU()(ctx, options.channel_count, options.input,
+//                                 delta_h, scale_s, scale_v, options.output);
+//  }
+//};
+//
+//REGISTER_KERNEL_BUILDER(
+//    Name("AdjustHsvInYiq").Device(DEVICE_GPU).TypeConstraint<float>("T"),
+//    AdjustHsvInYiqOp<GPUDevice>);
+//#endif
 
 }  // namespace tensorflow

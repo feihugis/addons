@@ -14,9 +14,9 @@ limitations under the License.
 #ifndef TENSORFLOW_CONTRIB_IMAGE_KERNELS_ADJUST_HSV_IN_YIQ_OP_H_
 #define TENSORFLOW_CONTRIB_IMAGE_KERNELS_ADJUST_HSV_IN_YIQ_OP_H_
 
-#if GOOGLE_CUDA
-#define EIGEN_USE_GPU
-#endif  // GOOGLE_CUDA
+//#if GOOGLE_CUDA
+//#define EIGEN_USE_GPU
+//#endif  // GOOGLE_CUDA
 
 #include <cmath>
 #include "third_party/eigen3/Eigen/Core"
@@ -66,21 +66,21 @@ EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void compute_tranformation_matrix(
 }
 }  // namespace internal
 
-#if GOOGLE_CUDA
-typedef Eigen::GpuDevice GPUDevice;
-
-namespace functor {
-
-struct AdjustHsvInYiqGPU {
-  void operator()(OpKernelContext* ctx, int channel_count,
-                  const Tensor* const input, const float* const delta_h,
-                  const float* const scale_s, const float* const scale_v,
-                  Tensor* const output);
-};
-
-}  // namespace functor
-
-#endif  // GOOGLE_CUDA
+//#if GOOGLE_CUDA
+//typedef Eigen::GpuDevice GPUDevice;
+//
+//namespace functor {
+//
+//struct AdjustHsvInYiqGPU {
+//  void operator()(OpKernelContext* ctx, int channel_count,
+//                  const Tensor* const input, const float* const delta_h,
+//                  const float* const scale_s, const float* const scale_v,
+//                  Tensor* const output);
+//};
+//
+//}  // namespace functor
+//
+//#endif  // GOOGLE_CUDA
 
 }  // namespace tensorflow
 

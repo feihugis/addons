@@ -107,8 +107,8 @@ class AdjustHueInYiqTest(tf.test.TestCase):
         delta_h = np.random.rand() * 2.0 - 1.0
         with self.assertRaises((tf.errors.InvalidArgumentError, ValueError)):
             self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
-        if not context.executing_eagerly():
-            self.skipTest("This test does not work in the graph mode yet.")
+        # if not context.executing_eagerly():
+        #     self.skipTest("This test does not work in the graph mode yet.")
         x_np = np.random.rand(4, 2, 4) * 255.
         delta_h = np.random.rand() * 2.0 - 1.0
         with self.assertRaisesOpError("input must have 3 channels "
