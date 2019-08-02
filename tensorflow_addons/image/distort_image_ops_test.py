@@ -112,7 +112,8 @@ class AdjustHueInYiqTest(tf.test.TestCase):
         x_np = np.random.rand(4, 2, 4) * 255.
         delta_h = np.random.rand() * 2.0 - 1.0
         if not context.executing_eagerly():
-            with self.assertRaisesOpError("RecvAsync is cancelled"):
+            with self.assertRaises(
+                    (tf.errors.InvalidArgumentError, tf.errors.CancelledError)):
                 self.evaluate(self._adjust_hue_in_yiq_tf(x_np, delta_h))
             return
 
